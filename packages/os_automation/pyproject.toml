@@ -5,13 +5,15 @@ description = "Windows OS automation primitives for Strata"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    # Will be filled in Phase 2
+    "bettercam",
+    "mss",
+    "pywinauto",
+    "winsdk",
+    "pywin32",
+    "numpy",
+    "opencv-python",
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/strata_os"]
-
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

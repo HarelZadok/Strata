@@ -9,13 +9,9 @@ dependencies = [
     "pydantic-settings>=2.5.2",
     "loguru>=0.7.2",
     "httpx>=0.27.2",
-    "litellm>=1.44.0", # Used for LLM provider abstraction if helpful, or we can build our own lightweight one. We'll build our own lightweight one to minimize deps as requested by the plan.
+    "litellm>=1.44.0",
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/strata_core"]
-
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

@@ -13,13 +13,9 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/strata_gateway"]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [tool.uv.sources]
 strata-core = { workspace = true }
 strata-protocols = { workspace = true }
-
