@@ -10,10 +10,10 @@ Strata is organized as a high-performance Python workspace (managed with [uv](ht
 
 ```mermaid
 graph TD
-    Client[Clients / Desktop UI / CLI Client] <-->|WebSockets / REST :8000| Gateway[Gateway Service (FastAPI)]
-    Gateway <-->|gRPC (Protobuf) :50051| Processing[Processing Service (Agent Runner)]
-    Processing <-->|Local / Cloud Inference| LLM[LLM Provider (Ollama / Qwen2.5 / OpenAI)]
-    Processing -.->|Automation Tools| OS[OS Automation (Capture, OCR, UIA, Input)]
+    Client["Clients / Desktop UI / CLI Client"] <-->|"WebSockets / REST :8000"| Gateway["Gateway Service (FastAPI)"]
+    Gateway <-->|"gRPC (Protobuf) :50051"| Processing["Processing Service (Agent Runner)"]
+    Processing <-->|"Local / Cloud Inference"| LLM["LLM Provider (Ollama / Qwen2.5 / OpenAI)"]
+    Processing -.->|"Automation Tools"| OS["OS Automation (Capture, OCR, UIA, Input)"]
 ```
 
 ### Components
