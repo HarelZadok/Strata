@@ -20,6 +20,18 @@ async def connect():
                 print(f"Active Model: {active}")
                 print(f"Available Models: {', '.join(models) if models else 'None detected'}")
                 print(f"--------------------")
+                
+                if models:
+                    choice = input(f"Enter model to use (or press Enter to keep '{active}'): ").strip()
+                    if choice and choice in models:
+                        resp = await client.post("http://127.0.0.1:8000/config/model", json={"model": choice})
+                        if resp.status_code == 200:
+                            print(f"[OK] Model switched to {choice}")
+                        else:
+                            print(f"[ERROR] Failed to switch model")
+                    elif choice:
+                        print(f"[WARN] Invalid model '{choice}', keeping '{active}'")
+
     except Exception as e:
         print(f"[Warning] Could not fetch model list: {e}")
 

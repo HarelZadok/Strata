@@ -17,3 +17,12 @@ async def get_models():
     client = LLMClient()
     models = await client.get_available_models()
     return {"models": models, "active": settings.llm_model}
+
+from pydantic import BaseModel
+class ModelUpdate(BaseModel):
+    model: str
+
+@router.post("/config/model")
+def set_model(update: ModelUpdate):
+    settings.llm_model = update.model
+    return {"status": "success", "active": settings.llm_model}
