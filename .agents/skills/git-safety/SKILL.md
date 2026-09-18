@@ -22,11 +22,12 @@ Prevents unintended modifications to the git index, history, and remote reposito
    - **Never** run `git push` without the user explicitly directing a push to remote.
 
 2. **Pre-Action Review Workflow**:
-   Before proposing any commit or push:
-   - Run and display `git status --short` to inspect what files are modified or untracked.
-   - Summarize the exact changes intended to be committed.
-   - Propose the commit message to the user.
-   - Wait for the user's explicit approval before proceeding.
+   When asking the user for permission to stage, commit, or push, you MUST specify:
+   - **Exact Files Affected**: List every file to be staged, committed, or pushed (with file paths).
+   - **Summary of Changes**: Clearly explain what changed in each file.
+   - **Proposed Commit Message**: Provide the exact commit message you intend to use.
+   - **Push Target Details**: If proposing a push, explicitly state the local branch, remote name, and remote repository URL (e.g. `push master -> origin/master at https://github.com/user/repo`).
+   - Wait for the user's explicit approval before proceeding with any git action.
 
 3. **Avoid Unintended Side Effects**:
    - Never run blanket `git add .` or `git add -A` unless explicitly instructed, as this can accidentally stage untracked scratch files or secrets.
