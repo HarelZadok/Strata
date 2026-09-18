@@ -1,6 +1,6 @@
 # Strata 🏔️
 
-**Strata** is an extensible, local-first Windows AI Assistant and automation system built with high-performance Python microservices. It combines real-time multimodal OS automation (screen capture, OCR, UI automation) with local LLMs (Ollama, Qwen 2.5) and cloud LLM providers to execute complex desktop tasks.
+**Strata** is an extensible, local-first Windows AI Assistant and automation system built with high-performance Python microservices. It combines real-time multimodal OS automation (screen capture, OCR, UI automation) with powerful local LLMs (Qwen 2.5, Llama 3.1, GPT-OSS, DeepSeek) to execute complex desktop tasks.
 
 ---
 
@@ -12,7 +12,7 @@ Strata is organized as a high-performance Python workspace (managed with [uv](ht
 graph TD
     Client["Clients / Desktop UI / CLI Client"] <-->|"WebSockets / REST :8000"| Gateway["Gateway Service (FastAPI)"]
     Gateway <-->|"gRPC (Protobuf) :50051"| Processing["Processing Service (Agent Runner)"]
-    Processing <-->|"Local / Cloud Inference"| LLM["LLM Provider (Ollama / Qwen2.5 / OpenAI)"]
+    Processing <-->|"Local / Cloud Inference"| LLM["LLM Provider (Qwen, Llama, GPT-OSS, DeepSeek)"]
     Processing -.->|"Automation Tools"| OS["OS Automation (Capture, OCR, UIA, Input)"]
 ```
 
@@ -88,7 +88,7 @@ Strata uses environment variables prefixed with `STRATA_` (or a `.env` file in t
 | `STRATA_GRPC_PORT` | `50051` | gRPC service port |
 | `STRATA_LLM_PROVIDER_MODE` | `local` | LLM mode (`local`, `cloud`, `remote`) |
 | `STRATA_LLM_BASE_URL` | `http://localhost:11434/v1` | LLM API base URL (Ollama default) |
-| `STRATA_LLM_MODEL` | `qwen2.5:7b` | LLM model identifier (e.g. `qwen2.5:7b`, `gpt-oss:20b`) |
+| `STRATA_LLM_MODEL` | `qwen2.5:7b` | LLM model identifier (e.g. `qwen2.5:7b`, `llama3.1`, `gpt-oss:20b`, `deepseek-coder-v2`) |
 | `STRATA_LLM_API_KEY` | `None` | API key (optional for local Ollama) |
 
 ---
