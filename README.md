@@ -88,7 +88,7 @@ Strata uses environment variables prefixed with `STRATA_` (or a `.env` file in t
 | `STRATA_GRPC_PORT` | `50051` | gRPC service port |
 | `STRATA_LLM_PROVIDER_MODE` | `local` | LLM mode (`local`, `cloud`, `remote`) |
 | `STRATA_LLM_BASE_URL` | `http://localhost:11434/v1` | LLM API base URL (Ollama default) |
-| `STRATA_LLM_MODEL` | `qwen2.5:7b` | LLM model identifier |
+| `STRATA_LLM_MODEL` | `qwen2.5:7b` | LLM model identifier (e.g. `qwen2.5:7b`, `gpt-oss:20b`) |
 | `STRATA_LLM_API_KEY` | `None` | API key (optional for local Ollama) |
 
 ---
