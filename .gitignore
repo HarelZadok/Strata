@@ -2,43 +2,80 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 
 # Distribution / packaging
 build/
 dist/
 *.egg-info/
 .eggs/
+*.whl
 
-# Unit test / coverage reports
-.coverage
-.pytest_cache/
-.tox/
-
-# Virtual Environments
+# Virtual Environments & Package Managers
 .env
-.venv
+.env.*
+!.env.example
+!.env.template
+.venv/
 env/
 venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing & Coverage
+.coverage
+.coverage.*
+.pytest_cache/
+.tox/
+.nox/
+htmlcov/
+coverage.xml
+
+# Code Quality & Linters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
 
 # IDEs and Editors
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# MacOS
+# Operating System Files
 .DS_Store
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
 
-# Logs
+# Logs & Databases
 *.log
+logs/
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
 
-# Generated Protobufs
+# Generated Protobufs & gRPC
 *_pb2.py
 *_pb2_grpc.py
 *_pb2.pyi
 
-# Frontend (Tauri/React)
+# Temporary & Runtime Artifacts (OS Automation / Screen Capture / OCR)
+temp/
+tmp/
+*.tmp
+screenshots/
+recordings/
+
+# Frontend (Tauri, React, Node, Web)
 node_modules/
 dist-tsc/
 src-tauri/target/
-
+.turbo/
