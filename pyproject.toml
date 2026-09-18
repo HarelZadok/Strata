@@ -1,0 +1,13 @@
+[project]
+name = "strata"
+version = "0.1.0"
+description = "Strata - Windows AI Assistant"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv.workspace]
+members = [
+    "packages/*",
+    "services/*"
+]

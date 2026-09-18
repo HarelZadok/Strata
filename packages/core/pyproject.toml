@@ -1,0 +1,17 @@
+[project]
+name = "strata-core"
+version = "0.1.0"
+description = "Shared models, config, and logging for Strata"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.5.2",
+    "loguru>=0.7.2",
+    "httpx>=0.27.2",
+    "litellm>=1.44.0", # Used for LLM provider abstraction if helpful, or we can build our own lightweight one. We'll build our own lightweight one to minimize deps as requested by the plan.
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

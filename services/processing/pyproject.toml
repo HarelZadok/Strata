@@ -1,0 +1,20 @@
+[project]
+name = "strata-processing"
+version = "0.1.0"
+description = "AI Processing Service for Strata"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "strata-core",
+    "strata-protocols",
+    "langgraph>=0.0.26",
+    "langchain-core>=0.1.30",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+strata-core = { workspace = true }
+strata-protocols = { workspace = true }

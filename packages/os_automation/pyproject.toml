@@ -1,0 +1,13 @@
+[project]
+name = "strata-os"
+version = "0.1.0"
+description = "Windows OS automation primitives for Strata"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    # Will be filled in Phase 2
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
