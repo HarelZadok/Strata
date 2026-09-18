@@ -31,3 +31,14 @@ venv/
 
 # Logs
 *.log
+
+# Generated Protobufs
+*_pb2.py
+*_pb2_grpc.py
+*_pb2.pyi
+
+# Frontend (Tauri/React)
+node_modules/
+dist-tsc/
+src-tauri/target/
+
