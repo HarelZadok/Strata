@@ -13,22 +13,28 @@ from loguru import logger
 class AgentService(agent_service_pb2_grpc.AgentServiceServicer):
     async def SubmitTask(self, request, context):
         logger.info(f"Received task for session {request.session_id}: {request.task}")
-        # Dummy response stream
-        yield agent_service_pb2.TaskEvent(
-            type="agent_token",
-            content=f"Received your task: {request.task}. I am processing it."
-        )
-        await asyncio.sleep(1)
-        yield agent_service_pb2.TaskEvent(
-            type="agent_action",
-            tool="dummy_tool",
-            args_json=json.dumps({"dummy": "arg"})
-        )
-        await asyncio.sleep(1)
-        yield agent_service_pb2.TaskEvent(
-            type="task_complete",
-            content="Task completed successfully."
-        )
+        from strata_core.llm_provider import LLMClient
+        llm = LLMClient()
+        
+        # Stream the LLM response back as agent_token events
+        messages = [{"role": "user", "content": request.task}]
+        try:
+            async for chunk in llm.chat_stream(messages):
+                yield agent_service_pb2.TaskEvent(
+                    type="agent_token",
+                    content=chunk
+                )
+            yield agent_service_pb2.TaskEvent(
+                type="task_complete",
+                content="LLM generation finished."
+            )
+        except Exception as e:
+            logger.error(f"LLM Error: {e}")
+            yield agent_service_pb2.TaskEvent(
+                type="error",
+                content=str(e)
+            )
+
 
 async def serve():
     server = grpc.aio.server()
