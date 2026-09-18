@@ -129,10 +129,10 @@ uv run python cli_client.py
 
 ### Testing OS Automation
 
-To test window focus, typing, and desktop capture:
+To visually test window focus, typing via `WM_CHAR` bypasses, and 4-layer fallback desktop capture:
 
 ```powershell
-uv run python test_os_automation.py
+uv run python .local/scripts/test_os_automation.py
 ```
 
 ---

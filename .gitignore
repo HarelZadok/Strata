@@ -23,9 +23,14 @@ ENV/
 env.bak/
 venv.bak/
 
-# Local & Unrelated Project Files
+# Local & Unrelated Project Files (Scratchpads, Dumps, Scripts)
 .local/
 /.local/
+# Specifically covers:
+# .local/scripts/
+# .local/dumps/
+# .local/scratch/
+# .local/notes/
 
 # Testing & Coverage
 .coverage
