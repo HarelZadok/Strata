@@ -9,8 +9,23 @@ async def connect():
     uri = f"ws://127.0.0.1:8000/ws/{session_id}"
     print(f"Connecting to {uri}...")
     try:
+        import httpx
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("http://127.0.0.1:8000/config/models")
+            if resp.status_code == 200:
+                data = resp.json()
+                active = data.get("active", "unknown")
+                models = data.get("models", [])
+                print(f"--- Model Status ---")
+                print(f"Active Model: {active}")
+                print(f"Available Models: {', '.join(models) if models else 'None detected'}")
+                print(f"--------------------")
+    except Exception as e:
+        print(f"[Warning] Could not fetch model list: {e}")
+
+    try:
         async with websockets.connect(uri) as websocket:
-            print("Connected! Type your message (or 'quit' to exit):")
+            print("\nConnected! Type your message (or 'quit' to exit):")
             
             async def receive_messages():
                 try:

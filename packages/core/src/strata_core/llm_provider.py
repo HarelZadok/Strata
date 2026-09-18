@@ -47,3 +47,18 @@ class LLMClient:
                                 yield delta["content"]
                     except json.JSONDecodeError:
                         pass
+
+    async def get_available_models(self) -> list[str]:
+        """Fetch list of available models. If local Ollama, queries /api/tags."""
+        if self.config.mode == "local" and "11434" in self.config.base_url:
+            # Ollama specific API for listing models
+            ollama_url = self.config.base_url.replace("/v1", "/api/tags")
+            try:
+                response = await self.client.get(ollama_url)
+                response.raise_for_status()
+                data = response.json()
+                return [m.get("name") for m in data.get("models", [])]
+            except Exception:
+                return [self.config.model]
+        else:
+            return [self.config.model]
