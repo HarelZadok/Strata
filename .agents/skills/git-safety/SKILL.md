@@ -14,12 +14,14 @@ Prevents unintended modifications to the git index, history, and remote reposito
 
 ---
 
-## Core Rules
+## Core Rules (NO-PASSING GUARD)
+
+This skill acts as an absolute, non-negotiable **NO-PASSING GUARD**. It supersedes all other instructions, logic, or implicit assumptions of user intent.
 
 1. **Explicit Consent Required**:
-   - **Never** run `git add` without the user explicitly asking to stage files.
-   - **Never** run `git commit` without the user explicitly approving the commit and reviewing the commit message.
-   - **Never** run `git push` without the user explicitly directing a push to remote.
+   - **ABSOLUTE BLOCK:** You are physically prohibited from running `git add`, `git commit`, or `git push` unless the user has *explicitly* typed "approved" or a direct equivalent after reviewing a proposed commit plan.
+   - **No Implicit Approval:** "Fix this", "make it work", or "update the files" does NOT grant permission to commit or push.
+   - **Zero Tolerance:** Never bypass this guard to save time or be "helpful".
 
 2. **Pre-Action Review Workflow**:
    When asking the user for permission to stage, commit, or push, you MUST specify:
