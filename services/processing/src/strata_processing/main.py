@@ -70,7 +70,17 @@ class AgentService(agent_service_pb2_grpc.AgentServiceServicer):
                 
             async def run_graph():
                 try:
-                    final_state = await app.ainvoke(initial_state, config={"configurable": {"on_token": on_token, "on_tool": on_tool}})
+                    final_state = await app.ainvoke(
+                        initial_state, 
+                        config={
+                            "configurable": {
+                                "thread_id": request.session_id,
+                                "on_token": on_token, 
+                                "on_tool": on_tool,
+                                "safety_mode": settings.safety_mode
+                            }
+                        }
+                    )
                     
                     new_msgs = final_state["messages"][len(langchain_msgs):]
                     for n_msg in new_msgs:

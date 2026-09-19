@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     # - gpt-oss:20b (OpenAI's open reasoning model, requires ~16GB VRAM)
     # - deepseek-coder-v2 (Exceptional open-source coding model)
     llm_model: str = "qwen2.5:7b"
+    safety_mode: str = "smart" # auto, smart, hitl
 
     class Config:
         env_prefix = "STRATA_"

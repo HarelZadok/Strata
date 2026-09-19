@@ -96,11 +96,35 @@ async def tool_execution(state: AgentState, config: RunnableConfig):
     
     callbacks = config.get("configurable", {})
     on_tool = callbacks.get("on_tool")
+    safety_mode = callbacks.get("safety_mode", "auto")
+    
+    # Check if the user's last message contains approval
+    last_human_msg = next((msg.content.lower() for msg in reversed(state["messages"]) if msg.type == "human"), "")
+    is_approved = "approve" in last_human_msg or "yes" in last_human_msg
     
     for tool_call in last_message.tool_calls:
         fn_name = tool_call["name"]
         args = tool_call["args"]
         call_id = tool_call["id"]
+        
+        # Risk Evaluation
+        is_dangerous = fn_name in ["click_element", "type_text"]
+        
+        if is_dangerous:
+            if safety_mode == "hitl" and not is_approved:
+                logger.warning(f"HITL blocked {fn_name}. Awaiting user approval.")
+                result = f"ACTION BLOCKED (Safety Mode: HITL). You must ask the user to explicitly say 'approve' before you can execute {fn_name}."
+                tool_messages.append(ToolMessage(content=result, tool_call_id=call_id))
+                continue
+                
+            if safety_mode == "smart":
+                # Smart mode: only block high-risk actions (typing). Clicks are considered medium-risk and auto-pass.
+                is_high_risk = fn_name in ["type_text"]
+                if is_high_risk and not is_approved:
+                    logger.warning(f"Smart safety blocked {fn_name}. Awaiting user approval.")
+                    result = f"ACTION BLOCKED (Safety Mode: SMART). The {fn_name} tool is high-risk. Ask the user to say 'approve' before executing."
+                    tool_messages.append(ToolMessage(content=result, tool_call_id=call_id))
+                    continue
         
         logger.info(f"Executing tool: {fn_name} with args: {args}")
         if on_tool:
