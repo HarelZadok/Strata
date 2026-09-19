@@ -28,64 +28,75 @@ class AgentService(agent_service_pb2_grpc.AgentServiceServicer):
             
         session_histories[request.session_id].append({"role": "user", "content": request.task})
         
-        tools = [
-            {
-                "type": "function",
-                "function": {
-                    "name": "get_user_profile",
-                    "description": "Retrieves stored facts about the user from permanent memory. Call this when the user asks what you know about them, asks for a personalized recommendation, or when their personal context is clearly relevant to answering well.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {},
-                        "required": []
-                    }
-                }
-            }
-        ]
+        from strata_processing.agent import app
+        from langchain_core.messages import HumanMessage
         
         async def process_turn():
             # ---------------------------------------------------------
-            # 1. Agentic Conversation Turn (with tool use)
+            # 1. Agentic Conversation Turn (with LangGraph)
             # ---------------------------------------------------------
+            
+            # Map our internal dictionary format to LangChain messages for the graph input
+            from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, ToolMessage
+            langchain_msgs = []
+            for msg in session_histories[request.session_id]:
+                if msg["role"] == "user":
+                    langchain_msgs.append(HumanMessage(content=msg["content"]))
+                elif msg["role"] == "assistant":
+                    langchain_msgs.append(AIMessage(content=msg["content"] or ""))
+                elif msg["role"] == "system":
+                    langchain_msgs.append(SystemMessage(content=msg["content"]))
+                elif msg["role"] == "tool":
+                    langchain_msgs.append(ToolMessage(content=msg["content"], tool_call_id=msg.get("tool_call_id", "0")))
+
+            initial_state = {
+                "messages": langchain_msgs,
+                "session_id": request.session_id
+            }
+
+            import asyncio
+            q = asyncio.Queue()
+            
+            async def on_token(token: str):
+                await q.put(agent_service_pb2.TaskEvent(type="agent_token", content=token))
+                
+            async def on_tool(name: str, args: dict):
+                await q.put(agent_service_pb2.TaskEvent(
+                    type="agent_action", 
+                    content=f"Executing tool {name}", 
+                    tool=name, 
+                    args_json=json.dumps(args)
+                ))
+                
+            async def run_graph():
+                try:
+                    final_state = await app.ainvoke(initial_state, config={"configurable": {"on_token": on_token, "on_tool": on_tool}})
+                    
+                    new_msgs = final_state["messages"][len(langchain_msgs):]
+                    for n_msg in new_msgs:
+                        if isinstance(n_msg, AIMessage):
+                            session_histories[request.session_id].append({"role": "assistant", "content": n_msg.content or ""})
+                        elif isinstance(n_msg, ToolMessage):
+                            session_histories[request.session_id].append({"role": "tool", "content": n_msg.content, "tool_call_id": n_msg.tool_call_id})
+                            
+                except Exception as e:
+                    logger.error(f"LangGraph execution error: {e}")
+                    await q.put(agent_service_pb2.TaskEvent(type="error", content=str(e)))
+                finally:
+                    await q.put(None) # Sentinel to stop generator
+                    
+            # Run graph in background
+            task = asyncio.create_task(run_graph())
+            
+            # Yield from queue
             while True:
-                full_response = ""
-                tool_calls_made = []
-                
-                async for chunk in llm.chat_stream(session_histories[request.session_id], tools=tools):
-                    if chunk["type"] == "content":
-                        full_response += chunk["data"]
-                        yield agent_service_pb2.TaskEvent(type="agent_token", content=chunk["data"])
-                    elif chunk["type"] == "tool_call":
-                        tool_calls_made.append(chunk["data"])
-                
-                if tool_calls_made:
-                    # Handle tool calls silently — the user never sees this
-                    session_histories[request.session_id].append({
-                        "role": "assistant",
-                        "content": full_response or None,
-                        "tool_calls": tool_calls_made
-                    })
-                    for tc in tool_calls_made:
-                        fn_name = tc.get("function", {}).get("name")
-                        tool_result = ""
-                        if fn_name == "get_user_profile":
-                            tool_result = get_user_profile(request.session_id)
-                            logger.info(f"Tool called: get_user_profile [{request.session_id}]")
-                        else:
-                            tool_result = f"Unknown tool: {fn_name}"
-                        
-                        session_histories[request.session_id].append({
-                            "role": "tool",
-                            "tool_call_id": tc.get("id", "0"),
-                            "content": tool_result
-                        })
-                    # Loop again — model now has tool result and will generate final response
-                    continue
-                else:
-                    # No tool calls — normal final response
-                    session_histories[request.session_id].append({"role": "assistant", "content": full_response})
-                    yield agent_service_pb2.TaskEvent(type="task_complete", content="LLM generation finished.")
+                event = await q.get()
+                if event is None:
                     break
+                yield event
+                
+            yield agent_service_pb2.TaskEvent(type="task_complete", content="LLM generation finished.")
+
 
             
             # ---------------------------------------------------------

@@ -19,7 +19,7 @@ async def extract_text(image_bytes: bytes):
     # Write bytes to random access stream
     stream = InMemoryRandomAccessStream()
     writer = DataWriter(stream)
-    writer.write_bytes(list(image_bytes))
+    writer.write_bytes(image_bytes)
     await writer.store_async()
     await writer.flush_async()
     stream.seek(0)
